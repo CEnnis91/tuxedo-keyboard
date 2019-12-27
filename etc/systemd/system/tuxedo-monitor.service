@@ -1,0 +1,12 @@
+[Unit]
+Description=Monitor tuxedo keyboard for screen locks
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/tuxedo_controller.sh monitor
+PIDFile=/run/tuxedo_keyboard/tuxedo_controller.pid
+Restart=always
+RestartSec=3s
+
+[Install]
+WantedBy=multi-user.target

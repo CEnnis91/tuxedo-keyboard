@@ -1,0 +1,9 @@
+[Unit]
+Description=Restore tuxedo keyboard state on startup
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/tuxedo_controller.sh restore
+
+[Install]
+WantedBy=multi-user.target

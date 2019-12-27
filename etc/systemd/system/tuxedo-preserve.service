@@ -1,0 +1,14 @@
+[Unit]
+Description=Save tuxedo keyboard state on shutdown
+#DefaultDependencies=no
+#Before=halt.target shutdown.target reboot.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+ExecStop=/usr/local/bin/tuxedo_controller.sh preserve_off
+RemainAfterExit=true
+
+[Install]
+#WantedBy=multi-user.target halt.target shutdown.target reboot.target
+WantedBy=multi-user.target
