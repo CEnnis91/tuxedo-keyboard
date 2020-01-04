@@ -41,6 +41,7 @@ __set_param() {
         # add a hex identifier for color parameters
         if [[ "$name" =~ ^color.*$ ]]; then
                 prefix="0x"
+                value="$(echo "$value" | grep -o "0x[A-Fa-f0-9]\{6\}" | cut -d'x' -f2)"
         fi
 
         if [[ "$type" == "live" ]]; then
