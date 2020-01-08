@@ -23,11 +23,18 @@ __get_param() {
                 prefix="0x"
         fi
 
+	local value=""
         if [[ "$type" == "live" ]]; then
-                echo "${prefix}$(cat "${DEVICE_PATH}/${name}")"
+                value="${prefix}$(cat "${DEVICE_PATH}/${name}")"
         else
-                echo "${prefix}$(cat "${RUN_DIR}/${name}")"
+                value="${prefix}$(cat "${RUN_DIR}/${name}")"
         fi
+
+	if [[ "$name" =~ ^color.*$ ]]; then
+		value="$(echo "$value" | grep -o "0x[A-Fa-f0-9]\{6\}$")"
+	fi
+
+	echo "$value"
 }
 get_live_param() { __get_param "live" "$1" ; }
 get_temp_param() { __get_param "temp" "$1" ; }
@@ -41,7 +48,7 @@ __set_param() {
         # add a hex identifier for color parameters
         if [[ "$name" =~ ^color.*$ ]]; then
                 prefix="0x"
-                value="$(echo "$value" | grep -o "0x[A-Fa-f0-9]\{6\}" | cut -d'x' -f2)"
+                value="$(echo "$value" | grep -o "0x[A-Fa-f0-9]\{6\}$")"
         fi
 
         if [[ "$type" == "live" ]]; then
@@ -156,9 +163,17 @@ preserve_state() {
 			if [[ -f "$LOCKED_PATH" ]]; then
 				log_action "Pulling $param from temp"
 				param_conf="${param_conf} ${param}=$(get_temp_param "$param")"
+
+				if [[ -z "$(get_temp_param "$param")" ]]; then
+					return 1
+				fi
 			else
 				log_action "Pulling $param from live"
 				param_conf="${param_conf} ${param}=$(get_live_param "$param")"
+
+				if [[ -z "$(get_live_param "$param")" ]]; then
+					return 1
+				fi
 			fi
 	        done
 
